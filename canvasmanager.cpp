@@ -170,8 +170,9 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
         paint->paintLine(stroke.sStart, stroke.sEnd);
         break;
     case ST_ERASE:
+        paint->setBrushColor(backgroundColor);
         for (int i = 0; i < stroke.data.length(); i++) {
-            paint->eraseEllipse(stroke.data.at(i));
+            paint->paintEllipse(stroke.data.at(i));
         }
         break;
     }
