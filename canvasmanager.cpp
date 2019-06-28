@@ -32,6 +32,11 @@ bool CanvasManager::openImage(const QString &filename) {
 
 void CanvasManager::setType(StrokeType st) {
     this->paint->strokeType = st;
+    if(st == ST_FREE || st == ST_ERASE) {
+        inputMode = IM_CONTINUE;
+    } else {
+        inputMode = IM_BEGIN_END;
+    }
 }
 
 bool CanvasManager::saveImage(const QString &filename, const char *fileFormat) {
@@ -65,8 +70,8 @@ void CanvasManager::undo() {
 }
 
 void CanvasManager::setInputMode() {
-    std::cout<<"set input mode"<<std::endl;
-    inputMode = (inputMode == IM_CONTINUE) ? IM_BEGIN_END : IM_CONTINUE;
+    std::cout<<"[Deperacated]: set input mode"<<std::endl;
+    // inputMode = (inputMode == IM_CONTINUE) ? IM_BEGIN_END : IM_CONTINUE;
 }
 
 
@@ -117,9 +122,15 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
             paint->paintEllipse(stroke.data.at(i));
         }
         break;
-    case ST_RECT:
+    case ST_RECT:{
+        QRectF rect(stroke.sStart, stroke.sEnd);
+        paint->paintRect(rect);
+    }
         break;
-    case ST_ELLIPS:
+    case ST_ELLIPS:{
+        QRectF rect(stroke.sStart, stroke.sEnd);
+        paint->paintEllipse(rect);
+    }
         break;
     case ST_DIAMOND:
         break;
@@ -186,7 +197,7 @@ bool CanvasManager::event(QEvent *event) {
                 }
             }
             if (event->type() == QEvent::TouchBegin && !strokeBegin) {
-                std::cout<<"Stroke Begin"<<std::endl;
+                std::cout<<"Stroke Begin: "<<std::endl;
                 strokeBegin = true;
                 strokeEnd = false;
                 tempStroke.append(rect);

@@ -24,6 +24,8 @@ public:
     void paintTouch(QRectF rect);
     void paintEllipse(const QRectF &rect);
     void eraseEllipse(const QRectF &rect);
+    void paintRect(QRectF rect);
+    void eraseRect(QRectF rect);
 private:
     QImage *image;
     QPainter *painter;

@@ -80,14 +80,24 @@ void PaintManager::paintEllipse(const QRectF &rect) {
 }
 
 void PaintManager::eraseEllipse(const QRectF &rect) {
-    painter->begin(image);
     QBrush tempBrush = qbrush;
     qbrush = painter->background();
-    updatePainterSetting();
-    painter->drawEllipse(rect);
-    painter->end();
+    paintEllipse(rect);
     qbrush = tempBrush;
+}
+
+void PaintManager::paintRect(QRectF rect) {
+    painter->begin(image);
+    updatePainterSetting();
+    painter->drawRect(rect);
     painter->end();
+}
+
+void PaintManager::eraseRect(QRectF rect) {
+    QBrush tempBrush = qbrush;
+    qbrush = painter->background();
+    paintRect(rect);
+    qbrush = tempBrush;
 }
 
 Stroke PaintManager::initStroke() {
