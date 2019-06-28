@@ -59,11 +59,18 @@ void MainWindow::createActions() {
         saveAsActs.append(action);
     }
 
-//    printAct = new QAction(tr("&Print..."), this);
-//    connect(printAct, &QAction::triggered, canvas, &canvas::print);
-    renderAct = new QAction(tr("&render"), this);
-//    exitAct->setShortcut(tr("Ctrl+R"));
+
+    renderAct = new QAction(tr("&Render"), this);
+    renderAct->setShortcut(tr("Ctrl+R"));
     connect(renderAct, &QAction::triggered, canvas, &CanvasManager::renderCanvas);
+
+    inputModeAct = new QAction(tr("&ChangeInputMode"), this);
+    inputModeAct->setShortcut(tr("Ctrl+I"));
+    connect(inputModeAct, &QAction::triggered, canvas, &CanvasManager::setInputMode);
+
+    undoAct = new QAction(tr("&Undo"), this);
+    undoAct->setShortcut(tr("Ctrl+Z"));
+    connect(undoAct, &QAction::triggered, canvas, &CanvasManager::undo);
 
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
@@ -88,12 +95,15 @@ void MainWindow::createMenus() {
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAct);
     fileMenu->addMenu(saveAsMenu);
-    fileMenu->addAction(renderAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
+
     optionMenu = new QMenu(tr("&Options"), this);
     optionMenu->addAction(clearScreenAct);
+    optionMenu->addAction(renderAct);
+    optionMenu->addAction(inputModeAct);
+    optionMenu->addAction(undoAct);
 
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);

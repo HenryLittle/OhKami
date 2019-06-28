@@ -14,9 +14,6 @@ public:
     QVector<Stroke> data;
     bool visible;
     BlendingMode blendingMode;
-    void addStroke(QVector<QRectF> stroke) {
-        data.append(Stroke(stroke));
-    }
 };
 
 #endif // LAYER_H

@@ -7,6 +7,12 @@
 
 #include "paintmanager.h"
 #include "layer.h"
+
+enum InputMode {
+    IM_CONTINUE,
+    IM_BEGIN_END
+};
+
 class CanvasManager : public QWidget
 {
      Q_OBJECT // required for classes that need signals and slots
@@ -18,11 +24,14 @@ public:
     bool isModified() const {return modified;}
     void setBackground(QColor color) {
         backgroundColor = color; 
+        paint->setBackground(color);
     }
 
 public slots:
     void clearImage();
     void renderCanvas(); // render the whole canvas layer by layer
+    void setInputMode();
+    void undo();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -38,6 +47,8 @@ private:
     QVector<QRectF> tempStroke;
     bool strokeBegin, strokeEnd;
     int currentLayer;
+    InputMode inputMode;
+    QPointF sStart, sEnd;
     void resizeImage(QImage *image, const QSize &newSize);
     void updateArea(QRectF rect);
     void renderStroke(const Stroke &stroke);

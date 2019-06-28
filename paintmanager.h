@@ -7,27 +7,25 @@
 #include "config.h"
 #include "layer.h"
 
-enum PaintMode{
-    FILL,
-    OUTLINE,
-    FILL_OUTLINE
-};
-
 // provide basic drawing APIs
 // handles QBrush & QPen & mbrush
 class PaintManager
 {
 public:
-    PaintManager(QImage *image, PaintMode paintMode = FILL);
-    void setPaintMode(PaintMode paintMode);
+    PaintManager(QImage *image, StrokeMode strokeMode = STM_FILL);
+    void setPaintMode(StrokeMode strokeMode);
+    Stroke initStroke();
+    void setBackground(QColor background);
     // paint APIs
     QRectF paintTablet(const QTabletEvent &tablet);
+    QRectF eraseTablet(const QTabletEvent &tablet, QColor backgroundColor);
     void paintTouch(QRectF rect);
-    void paintStroke(const QRectF &rect);
-
+    void paintEllipse(const QRectF &rect);
+    void eraseEllipse(const QRectF &rect);
 private:
     QImage *image;
-    PaintMode paintMode;
+    StrokeType strokeType;
+    StrokeMode strokeMode;
     QPainter *painter;
     QPen qpen;
     QBrush qbrush;

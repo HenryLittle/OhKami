@@ -6,9 +6,6 @@
 
 #include "canvasmanager.h"
 
-class ScribbleArea;
-
-//! [0]
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -44,7 +41,8 @@ private:
     QAction *clearScreenAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
+    QAction *inputModeAct;
+    QAction *undoAct;
 };
-//! [0]
 
 #endif

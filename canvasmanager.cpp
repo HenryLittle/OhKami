@@ -12,8 +12,11 @@ CanvasManager::CanvasManager(QWidget *parent)
     strokeBegin = false;
     strokeEnd = false;
     backgroundColor = QColor("white");
+    inputMode = IM_CONTINUE;
 }
 
+
+/* SLOTS */
 bool CanvasManager::openImage(const QString &filename) {
     QImage loadedImage;
     if (!loadedImage.load(filename))
@@ -42,8 +45,24 @@ bool CanvasManager::saveImage(const QString &filename, const char *fileFormat) {
 void CanvasManager::clearImage() {
     // clear the whole image
     image.fill(backgroundColor);
+    layers.clear();
+    layers.append(Layer());
+    currentLayer = 0;
     modified = true;
     update();
+}
+
+void CanvasManager::undo() {
+    if (!layers.at(currentLayer).data.empty()) {
+        std::cout<<"undo..."<<std::endl;
+        layers[currentLayer].data.removeLast();
+        renderCanvas();
+    }
+}
+
+void CanvasManager::setInputMode() {
+    std::cout<<"set input mode"<<std::endl;
+    inputMode = (inputMode == IM_CONTINUE) ? IM_BEGIN_END : IM_CONTINUE;
 }
 
 
@@ -72,6 +91,7 @@ void CanvasManager::renderCanvas() {
     if (layers.empty()) {
         image.fill(backgroundColor);
     } else {
+        image.fill(backgroundColor);
         for (int i = 0; i < layers.length(); i++) {
             const Layer &la = layers.at(i);
             if (!la.data.empty()) {
@@ -87,9 +107,27 @@ void CanvasManager::renderCanvas() {
 }
 
 void CanvasManager::renderStroke(const Stroke &stroke) {
-    for (int i = 0; i < stroke.data.length(); i++) {
-        paint->paintStroke(stroke.data.at(i));
+    switch (stroke.type) {
+    case ST_FREE:
+        for (int i = 0; i < stroke.data.length(); i++) {
+            paint->paintEllipse(stroke.data.at(i));
+        }
+        break;
+    case ST_RECT:
+        break;
+    case ST_ELLIPS:
+        break;
+    case ST_DIAMOND:
+        break;
+    case ST_LINE:
+        break;
+    case ST_ERASE:
+        for (int i = 0; i < stroke.data.length(); i++) {
+            paint->eraseEllipse(stroke.data.at(i));
+        }
+        break;
     }
+
 }
 
 /* Overrided functions */
@@ -120,30 +158,38 @@ bool CanvasManager::event(QEvent *event) {
     case QEvent::TouchEnd: {
         const QTouchEvent *touch = static_cast<QTouchEvent *>(event);
         const QList<QTouchEvent::TouchPoint> touchPoints = static_cast<QTouchEvent *>(event)->touchPoints();
-        for (const QTouchEvent::TouchPoint &touchPoint : touchPoints) {
-            switch (touchPoint.state()) {
-            case Qt::TouchPointStationary:
-            case Qt::TouchPointReleased:
-                // don't do anything if this touch point hasn't moved or has been released
-                continue;
-            default:
-                {
-                    QRectF rect = touchPoint.rect();
-                    if (rect.isEmpty()) {
-                        qreal diameter = MAX_BRUSH_DIAMETER;
-                        if (touch->device()->capabilities() & QTouchDevice::Pressure)
-                            diameter = MAX_BRUSH_DIAMETER + (MAX_BRUSH_DIAMETER - MAX_BRUSH_DIAMETER) * touchPoint.pressure();
-                        rect.setSize(QSizeF(diameter, diameter));
+        if (inputMode == IM_CONTINUE) {
+            for (const QTouchEvent::TouchPoint &touchPoint : touchPoints) {
+                switch (touchPoint.state()) {
+                case Qt::TouchPointStationary:
+                case Qt::TouchPointReleased:
+                    // don't do anything if this touch point hasn't moved or has been released
+                    continue;
+                default:
+                     {
+                        QRectF rect = touchPoint.rect();
+                        if (rect.isEmpty()) {
+                            qreal diameter = MAX_BRUSH_DIAMETER;
+                            if (touch->device()->capabilities() & QTouchDevice::Pressure)
+                                diameter = MAX_BRUSH_DIAMETER + (MAX_BRUSH_DIAMETER - MAX_BRUSH_DIAMETER) * touchPoint.pressure();
+                            rect.setSize(QSizeF(diameter, diameter));
+                        }
+                        paint->paintTouch(rect);
+                        updateArea(rect);
+                        tempStroke.append(rect);
                     }
-                    //paint->paintTouch(rect);
-                    //updateArea(rect);
-                    tempStroke.append(rect);
+                    break;
                 }
-                break;
             }
+            layers[currentLayer].data.append(tempStroke);
+            tempStroke.clear();
+        }  else if (inputMode == IM_BEGIN_END) {
+            Stroke stroke = paint->initStroke();
+            stroke.sStart = touchPoints.first().pos();
+            stroke.sEnd = touchPoints.last().pos();
+            layers[currentLayer].data.append(stroke);
         }
-        layers[currentLayer].data.append(tempStroke);
-        tempStroke.clear();
+
         break;
     }
         case QEvent::TabletPress:
@@ -151,13 +197,25 @@ bool CanvasManager::event(QEvent *event) {
         case QEvent::TabletRelease: {
             const QTabletEvent *tablet = static_cast<QTabletEvent* >(event);
             //std::cout<<"Tablet Pen Pressure "<<tablet->pressure()<<std::endl;
-            switch (tablet->pointerType()) {
-            case QTabletEvent::Pen:{
+            if (inputMode == IM_CONTINUE) {
                 QRectF rect;
-                if (tablet->pressure() > 0.0) {
-                    rect = paint->paintTablet(*tablet);
-                    updateArea(rect);
-
+                switch (tablet->pointerType()) {
+                case QTabletEvent::Pen:{
+                    if (tablet->pressure() > 0.0) {
+                        rect = paint->paintTablet(*tablet);
+                        updateArea(rect);
+                    }
+                    break;
+                }
+                case QTabletEvent::Eraser:{
+                    if (tablet->pressure() > 0.0) {
+                        rect = paint->eraseTablet(*tablet, backgroundColor);
+                        updateArea(rect);
+                    }
+                    break;
+                }
+                default:
+                        break;
                 }
                 if (event->type() == QEvent::TabletPress && !strokeBegin) {
                     std::cout<<"Stroke Begin"<<std::endl;
@@ -171,12 +229,36 @@ bool CanvasManager::event(QEvent *event) {
                 } else if (!strokeEnd && strokeBegin) {
                     tempStroke.append(rect);
                 }
-            }
-            case QTabletEvent::Eraser:{
-                break;
-            }
-            default:
-                    break;
+                if (strokeEnd) {
+                    Stroke stroke = paint->initStroke();
+                    stroke.data = tempStroke;
+                    if (tablet->pointerType() == QTabletEvent::Eraser) {
+                        stroke.type = ST_ERASE;
+                    }
+                    layers[currentLayer].data.append(stroke);
+                    tempStroke.clear();
+                    strokeEnd = false; strokeBegin = false;
+                }
+            } else if (inputMode == IM_BEGIN_END) {
+                if (event->type() == QEvent::TabletPress && !strokeBegin) {
+                    std::cout<<"Spos"<<std::endl;
+                    strokeBegin = true;
+                    strokeEnd = false;
+                    sStart = tablet->posF();
+                } else if (event->type() == QEvent::TabletRelease && strokeBegin) {
+                    std::cout<<"Epos"<<std::endl;
+                    strokeBegin = false;
+                    strokeEnd = true;
+                    sEnd = tablet->posF();
+                }
+                if (strokeEnd) {
+                    Stroke stroke = paint->initStroke();
+                    stroke.sStart = sStart;
+                    stroke.sEnd = sEnd;
+                    layers[currentLayer].data.append(stroke);
+                    tempStroke.clear();
+                    strokeEnd = false; strokeBegin = false;
+                }
             }
 
             break;
@@ -184,10 +266,5 @@ bool CanvasManager::event(QEvent *event) {
         default:
             return QWidget::event(event);
         }
-    if (strokeEnd) {
-        layers[currentLayer].addStroke(tempStroke);
-        tempStroke.clear();
-        strokeEnd = false; strokeBegin = false;
-    }
     return true;
 }
