@@ -135,6 +135,7 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
     case ST_DIAMOND:
         break;
     case ST_LINE:
+        paint->paintLine(stroke.sStart, stroke.sEnd);
         break;
     case ST_ERASE:
         for (int i = 0; i < stroke.data.length(); i++) {
@@ -216,10 +217,32 @@ bool CanvasManager::event(QEvent *event) {
                 strokeEnd = false; strokeBegin = false;
             }
         }  else if (inputMode == IM_BEGIN_END) {
-            Stroke stroke = paint->initStroke();
-            stroke.sStart = touchPoints.first().pos();
-            stroke.sEnd = touchPoints.last().pos();
-            layers[currentLayer].data.append(stroke);
+            if (event->type() == QEvent::TouchBegin && !strokeBegin) {
+                std::cout<<"Stroke Begin: "<<std::endl;
+                strokeBegin = true;
+                strokeEnd = false;
+                sStart = touchPoints.at(0).pos();
+            } else if (event->type() == QEvent::TouchEnd && strokeBegin) {
+                std::cout<<"Stroke End"<<std::endl;
+                strokeBegin = false;
+                strokeEnd = true;
+                sEnd = touchPoints.at(0).pos();
+            } else if (!strokeEnd && strokeBegin) {
+                // render temp stroke
+                Stroke stroke = paint->initStroke();
+                stroke.sStart = sStart;
+                stroke.sEnd = touchPoints.at(0).pos();
+                renderCanvas();
+                renderStroke(stroke);
+            }
+            if (strokeEnd) {
+                Stroke stroke = paint->initStroke();
+                stroke.sStart = sStart;
+                stroke.sEnd = sEnd;
+                layers[currentLayer].data.append(stroke);
+                tempStroke.clear();
+                strokeEnd = false; strokeBegin = false;
+            }
         }
 
         break;
@@ -282,7 +305,15 @@ bool CanvasManager::event(QEvent *event) {
                     strokeBegin = false;
                     strokeEnd = true;
                     sEnd = tablet->posF();
+                }  else if (!strokeEnd && strokeBegin) {
+                    // render temp stroke
+                    Stroke stroke = paint->initStroke();
+                    stroke.sStart = sStart;
+                    stroke.sEnd = tablet->posF();
+                    renderCanvas();
+                    renderStroke(stroke);
                 }
+
                 if (strokeEnd) {
                     Stroke stroke = paint->initStroke();
                     stroke.sStart = sStart;

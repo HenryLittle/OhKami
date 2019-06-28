@@ -7,13 +7,13 @@ PaintManager::PaintManager(QImage *image, StrokeMode paintMode) {
     this->strokeMode = paintMode;
     this->image = image;
     // for test only
-    setPaintMode(STM_FILL);
+    setStrokeMode(STM_FILL);
     this->strokeType = ST_FREE;
     this->qbrush = QBrush(QColor("grey"));
     this->brushSize = 150.0;
 }
 
-void PaintManager::setPaintMode(StrokeMode paintMode) {
+void PaintManager::setStrokeMode(StrokeMode paintMode) {
     this->strokeMode = paintMode;
     updatePainterSetting();
 }
@@ -97,6 +97,23 @@ void PaintManager::eraseRect(QRectF rect) {
     QBrush tempBrush = qbrush;
     qbrush = painter->background();
     paintRect(rect);
+    qbrush = tempBrush;
+}
+
+void PaintManager::paintLine(QPointF pos1, QPointF pos2) {
+    StrokeMode stm = strokeMode;
+    setStrokeMode(STM_OUTLINE);
+    painter->begin(image);
+    updatePainterSetting();
+    painter->drawLine(pos1, pos2);
+    painter->end();
+    setStrokeMode(stm);
+}
+
+void PaintManager::eraseLine(QPointF pos1, QPointF pos2) {
+    QBrush tempBrush = qbrush;
+    qbrush = painter->background();
+    paintLine(pos1, pos2);
     qbrush = tempBrush;
 }
 

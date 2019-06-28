@@ -15,7 +15,7 @@ public:
     StrokeType strokeType;
     StrokeMode strokeMode;
     PaintManager(QImage *image, StrokeMode strokeMode = STM_FILL);
-    void setPaintMode(StrokeMode strokeMode);
+    void setStrokeMode(StrokeMode strokeMode);
     Stroke initStroke();
     void setBackground(QColor background);
     // paint APIs
@@ -26,6 +26,9 @@ public:
     void eraseEllipse(const QRectF &rect);
     void paintRect(QRectF rect);
     void eraseRect(QRectF rect);
+    void paintLine(QPointF pos1, QPointF pos2);
+    void eraseLine(QPointF pos1, QPointF pos2);
+
 private:
     QImage *image;
     QPainter *painter;
