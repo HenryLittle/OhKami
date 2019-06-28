@@ -1,22 +1,50 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QList>
 #include <QMainWindow>
 
-namespace Ui {
-class MainWindow;
-}
+#include "canvasmanager.h"
 
+class ScribbleArea;
+
+//! [0]
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    MainWindow();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+private slots:
+    void open();
+    void save();
+    void about();
 
 private:
-    Ui::MainWindow *ui;
-};
+    void createActions();
+    void createMenus();
+    bool maybeSave();
+    bool saveFile(const QByteArray &fileFormat);
 
-#endif // MAINWINDOW_H
+    CanvasManager *canvas;
+
+    QMenu *saveAsMenu;
+    QMenu *fileMenu;
+    QMenu *optionMenu;
+    QMenu *helpMenu;
+
+    QAction *openAct;
+    QList<QAction *> saveAsActs;
+    QAction *exitAct;
+    QAction *renderAct;
+    QAction *clearScreenAct;
+    QAction *aboutAct;
+    QAction *aboutQtAct;
+};
+//! [0]
+
+#endif
