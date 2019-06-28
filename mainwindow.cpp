@@ -73,6 +73,16 @@ void MainWindow::createActions() {
     undoAct->setShortcut(tr("Ctrl+Z"));
     connect(undoAct, &QAction::triggered, canvas, &CanvasManager::undo);
 
+    penColorAct = new QAction(tr("Set Pen Color"), this);
+    penColorAct->setShortcut(tr("Ctrl+P"));
+    connect(penColorAct, &QAction::triggered, canvas, [=](){canvas->setColor(TT_PEN);});
+    brushColorAct = new QAction(tr("Set Brush Color"), this);
+    brushColorAct->setShortcut(tr("Ctrl+B"));
+    connect(brushColorAct, &QAction::triggered, canvas, [=](){canvas->setColor(TT_BRUSH);});
+    backgroundColorAct = new QAction(tr("Set Background Color"), this);
+    backgroundColorAct->setShortcut(tr("Ctrl+D"));
+    connect(backgroundColorAct, &QAction::triggered, canvas, [=](){canvas->setColor(TT_BACKGROUND);});
+
 
     freeAct = new QAction(tr("&Brush"), this);
     freeAct->setShortcut(tr("Ctrl+1"));
@@ -124,7 +134,7 @@ void MainWindow::createMenus() {
     optionMenu = new QMenu(tr("&Options"), this);
     optionMenu->addAction(clearScreenAct);
     optionMenu->addAction(renderAct);
-    optionMenu->addAction(inputModeAct);
+    //optionMenu->addAction(inputModeAct);
     optionMenu->addAction(undoAct);
     optionMenu->addSeparator();
     optionMenu->addAction(freeAct);
@@ -133,7 +143,10 @@ void MainWindow::createMenus() {
     optionMenu->addAction(diamondAct);
     optionMenu->addAction(lineAct);
     optionMenu->addAction(eraseAct);
-
+    optionMenu->addSeparator();
+    optionMenu->addAction(penColorAct);
+    optionMenu->addAction(brushColorAct);
+    optionMenu->addAction(backgroundColorAct);
 
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);

@@ -3,7 +3,7 @@
 
 #include <QList>
 #include <QMainWindow>
-
+#include <QColorDialog>
 #include "canvasmanager.h"
 
 class MainWindow : public QMainWindow
@@ -44,6 +44,9 @@ private:
     QAction *aboutQtAct;
     QAction *inputModeAct;
     QAction *undoAct;
+    QAction *penColorAct;
+    QAction *brushColorAct;
+    QAction *backgroundColorAct;
     // stroke type
     QAction *freeAct;
     QAction *rectAct;

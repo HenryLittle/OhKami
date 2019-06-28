@@ -7,6 +7,7 @@
 #include <iostream>
 
 
+
 class ScribbleArea : public QWidget
 {
     Q_OBJECT // required for classes that need signals and slots

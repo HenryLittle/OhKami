@@ -30,6 +30,27 @@ bool CanvasManager::openImage(const QString &filename) {
     return true;
 }
 
+void CanvasManager::setColor(ToolType tool) {
+    switch (tool) {
+    case TT_PEN:{
+        QColor color = QColorDialog::getColor(paint->getPenColor(), this, "Choose Pen Color");
+        paint->setPenColor(color);
+    }
+        break;
+    case TT_BRUSH:{
+        QColor color = QColorDialog::getColor(paint->getBrushColor(), this, "Choose Brush Color");
+        paint->setBrushColor(color);
+    }
+        break;
+    case TT_BACKGROUND:{
+        QColor color = QColorDialog::getColor(backgroundColor, this, "Choose Background Color");
+        backgroundColor = color;
+        paint->setBackground(color);
+    }
+        break;
+    }
+}
+
 void CanvasManager::setType(StrokeType st) {
     this->paint->strokeType = st;
     if(st == ST_FREE || st == ST_ERASE) {
@@ -116,9 +137,13 @@ void CanvasManager::renderCanvas() {
 }
 
 void CanvasManager::renderStroke(const Stroke &stroke) {
+    paint->cacheCurrentColor();
+    paint->setPenColor(stroke.outlineColor);
+    paint->setBrushColor(stroke.fillColor);
     switch (stroke.type) {
     case ST_FREE:
         for (int i = 0; i < stroke.data.length(); i++) {
+
             paint->paintEllipse(stroke.data.at(i));
         }
         break;
@@ -143,7 +168,7 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
         }
         break;
     }
-
+    paint->restoreColorFromCache();
 }
 
 /* Overrided functions */
@@ -306,12 +331,17 @@ bool CanvasManager::event(QEvent *event) {
                     strokeEnd = true;
                     sEnd = tablet->posF();
                 }  else if (!strokeEnd && strokeBegin) {
-                    // render temp stroke
-                    Stroke stroke = paint->initStroke();
-                    stroke.sStart = sStart;
-                    stroke.sEnd = tablet->posF();
-                    renderCanvas();
-                    renderStroke(stroke);
+                    // render temp stroke at a lower rate than the actuall refresh rate
+                    if (tabletFilter <= TABLET_PREVIEW_FILTER_STRENGTH) {
+                        tabletFilter ++;
+                    } else {
+                        tabletFilter = 0;
+                        Stroke stroke = paint->initStroke();
+                        stroke.sStart = sStart;
+                        stroke.sEnd = tablet->posF();
+                        renderCanvas();
+                        renderStroke(stroke);
+                    }
                 }
 
                 if (strokeEnd) {

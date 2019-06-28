@@ -18,7 +18,24 @@ public:
     void setStrokeMode(StrokeMode strokeMode);
     Stroke initStroke();
     void setBackground(QColor background);
+    void cacheCurrentColor() {
+        penColorCache = qpen.color();
+        brushColorCache = qbrush.color();
+    }
+    void restoreColorFromCache() {
+        qpen.setColor(penColorCache);
+        qbrush.setColor(brushColorCache);
+    }
+
+
     // paint APIs
+
+    QColor getPenColor() {return qpen.color();}
+    QColor getBrushColor() {return qbrush.color();}
+    void setPenColor(QColor color) {qpen.setColor(color);}
+    void setBrushColor(QColor color) {qbrush.setColor(color);}
+
+
     QRectF paintTablet(const QTabletEvent &tablet);
     QRectF eraseTablet(const QTabletEvent &tablet, QColor backgroundColor);
     void paintTouch(QRectF rect);
@@ -36,6 +53,9 @@ private:
     QBrush qbrush;
     qreal brushSize;
     void updatePainterSetting();
+    // do not use explicitly
+    QColor penColorCache;
+    QColor brushColorCache;
 };
 
 #endif // PAINTMANAGER_H

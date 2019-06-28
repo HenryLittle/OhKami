@@ -13,6 +13,12 @@ enum InputMode {
     IM_BEGIN_END
 };
 
+enum ToolType{
+    TT_PEN,
+    TT_BRUSH,
+    TT_BACKGROUND
+};
+
 class CanvasManager : public QWidget
 {
      Q_OBJECT // required for classes that need signals and slots
@@ -33,6 +39,7 @@ public slots:
     void setInputMode();
     void undo();
     void setType(StrokeType st);
+    void setColor(ToolType tool);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -50,6 +57,7 @@ private:
     int currentLayer;
     InputMode inputMode;
     QPointF sStart, sEnd;
+    int tabletFilter = 0;
     void resizeImage(QImage *image, const QSize &newSize);
     void updateArea(QRectF rect);
     void renderStroke(const Stroke &stroke);
