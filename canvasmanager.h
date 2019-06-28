@@ -32,6 +32,7 @@ public slots:
     void renderCanvas(); // render the whole canvas layer by layer
     void setInputMode();
     void undo();
+    void setType(StrokeType st);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

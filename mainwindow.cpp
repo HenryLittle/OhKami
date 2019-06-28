@@ -2,6 +2,7 @@
 
 #include "mainwindow.h"
 #include "canvas.h"
+#include "stroke.h"
 
 MainWindow::MainWindow() {
     canvas = new CanvasManager();
@@ -72,6 +73,27 @@ void MainWindow::createActions() {
     undoAct->setShortcut(tr("Ctrl+Z"));
     connect(undoAct, &QAction::triggered, canvas, &CanvasManager::undo);
 
+
+    freeAct = new QAction(tr("&Brush"), this);
+    freeAct->setShortcut(tr("Ctrl+1"));
+    connect(freeAct, &QAction::triggered, canvas, [=](){canvas->setType(ST_FREE);});
+    rectAct = new QAction(tr("&Rectangle"), this);
+    rectAct->setShortcut(tr("Ctrl+2"));
+    connect(rectAct, &QAction::triggered, canvas, [=](){canvas->setType(ST_RECT);});
+    ellipseAct = new QAction(tr("&Ellipse"), this);
+    ellipseAct->setShortcut(tr("Ctrl+3"));
+    connect(ellipseAct, &QAction::triggered, canvas, [=](){canvas->setType(ST_ELLIPS);});
+    diamondAct = new QAction(tr("&Diamond"), this);
+    diamondAct->setShortcut(tr("Ctrl+4"));
+    connect(diamondAct, &QAction::triggered, canvas, [=](){canvas->setType(ST_DIAMOND);});
+    lineAct = new QAction(tr("&Line"), this);
+    lineAct->setShortcut(tr("Ctrl+5"));
+    connect(lineAct, &QAction::triggered, canvas, [=](){canvas->setType(ST_LINE);});
+    eraseAct = new QAction(tr("&Eraser"), this);
+    eraseAct->setShortcut(tr("Ctrl+6"));
+    connect(eraseAct, &QAction::triggered, canvas, [=](){canvas->setType(ST_ERASE);});
+
+
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
     connect(exitAct, &QAction::triggered, this, &QWidget::close);
@@ -104,6 +126,14 @@ void MainWindow::createMenus() {
     optionMenu->addAction(renderAct);
     optionMenu->addAction(inputModeAct);
     optionMenu->addAction(undoAct);
+    optionMenu->addSeparator();
+    optionMenu->addAction(freeAct);
+    optionMenu->addAction(rectAct);
+    optionMenu->addAction(ellipseAct);
+    optionMenu->addAction(diamondAct);
+    optionMenu->addAction(lineAct);
+    optionMenu->addAction(eraseAct);
+
 
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);

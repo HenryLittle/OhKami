@@ -33,6 +33,7 @@ private:
     QMenu *fileMenu;
     QMenu *optionMenu;
     QMenu *helpMenu;
+    QMenu *toolMenu;
 
     QAction *openAct;
     QList<QAction *> saveAsActs;
@@ -43,6 +44,13 @@ private:
     QAction *aboutQtAct;
     QAction *inputModeAct;
     QAction *undoAct;
+    // stroke type
+    QAction *freeAct;
+    QAction *rectAct;
+    QAction *ellipseAct;
+    QAction *diamondAct;
+    QAction *lineAct;
+    QAction *eraseAct;
 };
 
 #endif

@@ -30,6 +30,10 @@ bool CanvasManager::openImage(const QString &filename) {
     return true;
 }
 
+void CanvasManager::setType(StrokeType st) {
+    this->paint->strokeType = st;
+}
+
 bool CanvasManager::saveImage(const QString &filename, const char *fileFormat) {
     QImage visibleImage = image;
     resizeImage(&visibleImage, size());
@@ -159,6 +163,7 @@ bool CanvasManager::event(QEvent *event) {
         const QTouchEvent *touch = static_cast<QTouchEvent *>(event);
         const QList<QTouchEvent::TouchPoint> touchPoints = static_cast<QTouchEvent *>(event)->touchPoints();
         if (inputMode == IM_CONTINUE) {
+            QRectF rect;
             for (const QTouchEvent::TouchPoint &touchPoint : touchPoints) {
                 switch (touchPoint.state()) {
                 case Qt::TouchPointStationary:
@@ -167,7 +172,7 @@ bool CanvasManager::event(QEvent *event) {
                     continue;
                 default:
                      {
-                        QRectF rect = touchPoint.rect();
+                        rect = touchPoint.rect();
                         if (rect.isEmpty()) {
                             qreal diameter = MAX_BRUSH_DIAMETER;
                             if (touch->device()->capabilities() & QTouchDevice::Pressure)
@@ -176,13 +181,29 @@ bool CanvasManager::event(QEvent *event) {
                         }
                         paint->paintTouch(rect);
                         updateArea(rect);
-                        tempStroke.append(rect);
                     }
                     break;
                 }
             }
-            layers[currentLayer].data.append(tempStroke);
-            tempStroke.clear();
+            if (event->type() == QEvent::TouchBegin && !strokeBegin) {
+                std::cout<<"Stroke Begin"<<std::endl;
+                strokeBegin = true;
+                strokeEnd = false;
+                tempStroke.append(rect);
+            } else if (event->type() == QEvent::TouchEnd && strokeBegin) {
+                std::cout<<"Stroke End"<<std::endl;
+                strokeBegin = false;
+                strokeEnd = true;
+            } else if (!strokeEnd && strokeBegin) {
+                tempStroke.append(rect);
+            }
+            if (strokeEnd) {
+                Stroke stroke = paint->initStroke();
+                stroke.data = tempStroke;
+                layers[currentLayer].data.append(stroke);
+                tempStroke.clear();
+                strokeEnd = false; strokeBegin = false;
+            }
         }  else if (inputMode == IM_BEGIN_END) {
             Stroke stroke = paint->initStroke();
             stroke.sStart = touchPoints.first().pos();

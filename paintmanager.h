@@ -12,6 +12,8 @@
 class PaintManager
 {
 public:
+    StrokeType strokeType;
+    StrokeMode strokeMode;
     PaintManager(QImage *image, StrokeMode strokeMode = STM_FILL);
     void setPaintMode(StrokeMode strokeMode);
     Stroke initStroke();
@@ -24,8 +26,6 @@ public:
     void eraseEllipse(const QRectF &rect);
 private:
     QImage *image;
-    StrokeType strokeType;
-    StrokeMode strokeMode;
     QPainter *painter;
     QPen qpen;
     QBrush qbrush;
