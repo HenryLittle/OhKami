@@ -42,6 +42,7 @@ public:
 
     QRectF paintTablet(const QTabletEvent &tablet);
     QRectF eraseTablet(const QTabletEvent &tablet, QColor backgroundColor);
+    QRectF paintMouse(const QPointF &pos);
     void paintTouch(QRectF rect);
     void paintEllipse(const QRectF &rect);
     void eraseEllipse(const QRectF &rect);

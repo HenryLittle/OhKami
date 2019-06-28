@@ -67,6 +67,12 @@ QRectF PaintManager::eraseTablet(const QTabletEvent &tablet, QColor backgroundCo
     return rect;
 }
 
+QRectF PaintManager::paintMouse(const QPointF &pos) {
+    QRectF rect = QRectF(pos.x() - brushSize / 2, pos.y() - brushSize / 2, brushSize, brushSize);
+    paintEllipse(rect);
+    return rect;
+}
+
 void PaintManager::paintTouch(QRectF rect) {
     painter->begin(image);
     painter->setPen(Qt::NoPen);

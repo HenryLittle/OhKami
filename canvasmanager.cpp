@@ -364,6 +364,65 @@ bool CanvasManager::event(QEvent *event) {
 
             break;
         }
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
+    case QEvent::MouseButtonRelease:{
+        const QMouseEvent *mouse = static_cast<QMouseEvent* >(event);
+        if (inputMode == IM_CONTINUE) {
+            QRectF rect;
+            rect = paint->paintMouse(mouse->pos());
+            updateArea(rect);
+            if (mouse->type() ==  QEvent::MouseButtonPress && mouse->button() == Qt::LeftButton && !strokeBegin) {
+                std::cout<<"Stroke Begin"<<std::endl;
+                strokeBegin = true;
+                strokeEnd = false;
+                tempStroke.append(rect);
+            } else if (mouse->type() ==  QEvent::MouseButtonRelease && mouse->button() == Qt::LeftButton && strokeBegin) {
+                std::cout<<"Stroke End"<<std::endl;
+                strokeBegin = false;
+                strokeEnd = true;
+            } else if (!strokeEnd && strokeBegin) {
+                tempStroke.append(rect);
+            }
+            if (strokeEnd) {
+                Stroke stroke = paint->initStroke();
+                stroke.data = tempStroke;
+                layers[currentLayer].data.append(stroke);
+                tempStroke.clear();
+                strokeEnd = false; strokeBegin = false;
+            }
+        } else if (inputMode == IM_BEGIN_END) {
+            if (mouse->type() ==  QEvent::MouseButtonPress && mouse->button() == Qt::LeftButton && !strokeBegin) {
+                std::cout<<"Spos"<<std::endl;
+                strokeBegin = true;
+                strokeEnd = false;
+                sStart = mouse->pos();
+            } else if (mouse->type() ==  QEvent::MouseButtonRelease && mouse->button() == Qt::LeftButton && strokeBegin) {
+                std::cout<<"Epos"<<std::endl;
+                strokeBegin = false;
+                strokeEnd = true;
+                sEnd = mouse->pos();
+            }  else if (!strokeEnd && strokeBegin) {
+                // render temp stroke
+                tabletFilter = 0;
+                Stroke stroke = paint->initStroke();
+                stroke.sStart = sStart;
+                stroke.sEnd = mouse->pos();
+                renderCanvas();
+                renderStroke(stroke);
+            }
+
+            if (strokeEnd) {
+                Stroke stroke = paint->initStroke();
+                stroke.sStart = sStart;
+                stroke.sEnd = sEnd;
+                layers[currentLayer].data.append(stroke);
+                tempStroke.clear();
+                strokeEnd = false; strokeBegin = false;
+            }
+        }
+    }
+        break;
         default:
             return QWidget::event(event);
         }
