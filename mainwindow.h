@@ -44,9 +44,11 @@ private:
     QAction *aboutQtAct;
     QAction *inputModeAct;
     QAction *undoAct;
+    // settings
     QAction *penColorAct;
     QAction *brushColorAct;
     QAction *backgroundColorAct;
+    QAction *strokeModeAct;
     // stroke type
     QAction *freeAct;
     QAction *rectAct;

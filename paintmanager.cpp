@@ -13,8 +13,12 @@ PaintManager::PaintManager(QImage *image, StrokeMode paintMode) {
     this->brushSize = 150.0;
 }
 
-void PaintManager::setStrokeMode(StrokeMode paintMode) {
-    this->strokeMode = paintMode;
+void PaintManager::setStrokeMode(StrokeMode strokeMode) {
+    if (this->strokeType != ST_LINE) {
+        this->strokeMode = strokeMode;
+    } else {
+        this->strokeMode = STM_OUTLINE;
+    }
     updatePainterSetting();
 }
 

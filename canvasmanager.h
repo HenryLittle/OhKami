@@ -40,6 +40,7 @@ public slots:
     void undo();
     void setType(StrokeType st);
     void setColor(ToolType tool);
+    void changeStrokeMode();
 
 protected:
     void paintEvent(QPaintEvent *event) override;

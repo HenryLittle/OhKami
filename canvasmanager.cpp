@@ -60,6 +60,11 @@ void CanvasManager::setType(StrokeType st) {
     }
 }
 
+void CanvasManager::changeStrokeMode() {
+    paint->setStrokeMode(paint->strokeMode == STM_OUTLINE ? STM_FILL : (paint->strokeMode == STM_FILL ? STM_FILL_OUTLINE : STM_OUTLINE));
+    std::cout<<"Init Stroke Mode:"<<paint->strokeMode<<std::endl;
+}
+
 bool CanvasManager::saveImage(const QString &filename, const char *fileFormat) {
     QImage visibleImage = image;
     resizeImage(&visibleImage, size());
@@ -137,9 +142,11 @@ void CanvasManager::renderCanvas() {
 }
 
 void CanvasManager::renderStroke(const Stroke &stroke) {
-    paint->cacheCurrentColor();
+    paint->cacheState();
     paint->setPenColor(stroke.outlineColor);
     paint->setBrushColor(stroke.fillColor);
+    paint->strokeMode = stroke.mode;
+    paint->strokeType = stroke.type;
     switch (stroke.type) {
     case ST_FREE:
         for (int i = 0; i < stroke.data.length(); i++) {
@@ -168,7 +175,7 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
         }
         break;
     }
-    paint->restoreColorFromCache();
+    paint->restoreState();
 }
 
 /* Overrided functions */

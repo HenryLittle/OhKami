@@ -83,6 +83,9 @@ void MainWindow::createActions() {
     backgroundColorAct->setShortcut(tr("Ctrl+D"));
     connect(backgroundColorAct, &QAction::triggered, canvas, [=](){canvas->setColor(TT_BACKGROUND);});
 
+    strokeModeAct = new QAction(tr("Change Stroke Mode"), this);
+    strokeModeAct->setShortcut(tr("Ctrl+M"));
+    connect(strokeModeAct, &QAction::triggered, canvas, &CanvasManager::changeStrokeMode);
 
     freeAct = new QAction(tr("&Brush"), this);
     freeAct->setShortcut(tr("Ctrl+1"));
@@ -147,6 +150,7 @@ void MainWindow::createMenus() {
     optionMenu->addAction(penColorAct);
     optionMenu->addAction(brushColorAct);
     optionMenu->addAction(backgroundColorAct);
+    optionMenu->addAction(strokeModeAct);
 
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);

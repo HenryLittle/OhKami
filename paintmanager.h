@@ -18,13 +18,17 @@ public:
     void setStrokeMode(StrokeMode strokeMode);
     Stroke initStroke();
     void setBackground(QColor background);
-    void cacheCurrentColor() {
+    void cacheState() {
         penColorCache = qpen.color();
         brushColorCache = qbrush.color();
+        smCache = strokeMode;
+        stCache = strokeType;
     }
-    void restoreColorFromCache() {
+    void restoreState() {
         qpen.setColor(penColorCache);
         qbrush.setColor(brushColorCache);
+        strokeMode = smCache;
+        strokeType = stCache;
     }
 
 
@@ -56,6 +60,8 @@ private:
     // do not use explicitly
     QColor penColorCache;
     QColor brushColorCache;
+    StrokeMode smCache;
+    StrokeType stCache;
 };
 
 #endif // PAINTMANAGER_H
