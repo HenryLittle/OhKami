@@ -47,6 +47,7 @@ void CanvasManager::setColor(ToolType tool) {
         QColor color = QColorDialog::getColor(backgroundColor, this, "Choose Background Color");
         backgroundColor = color;
         paint->setBackground(color);
+        renderCanvas();
     }
         break;
     }
