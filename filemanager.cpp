@@ -4,11 +4,12 @@ FileManager::FileManager(const QString &fileName)
     this->file =new QFile(fileName);
 }
 
-void FileManager::saveKami(const QVector<Layer> &layers) {
+void FileManager::saveKami(const QVector<Layer> &layers, QColor background) {
     file->open(QIODevice::WriteOnly);
     QDataStream out(file);
     out << KAMI_HEADER;
     out.setVersion(QDataStream::Qt_4_0);
+    out << background;
     out << layers.length();
     for (int i = 0; i < layers.length(); i++) {
         const Layer &layer = layers.at(i);
@@ -43,6 +44,7 @@ QVector<Layer> FileManager::loadKami() {
     } else {
         in.setVersion(QDataStream::Qt_4_0);
         int l1;
+        in >> background;
         in >> l1;
         for (int i = 0; i < l1; i++) {
             Layer layer;

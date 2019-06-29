@@ -13,11 +13,13 @@ class FileManager
 {
 public:
     FileManager(const QString &filename);
-    void saveKami(const QVector<Layer> &layers);
+    void saveKami(const QVector<Layer> &layers, QColor background);
     QVector<Layer> loadKami();
+    QColor getBackground() {return background;}
 private:
     const quint16 KAMI_HEADER = 0xCAE1; // Kami
     QFile *file;
+    QColor background;
 };
 
 #endif // FILEMANAGER_H

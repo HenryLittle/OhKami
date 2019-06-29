@@ -82,12 +82,14 @@ void CanvasManager::loadKami(const QString &fileName) {
     layers.clear();
     FileManager kami(fileName);
     layers = kami.loadKami();
+    modified = false;
+    backgroundColor = kami.getBackground();
     renderCanvas();
 }
 
 void CanvasManager::saveKami(const QString &fileName) {
     FileManager kami(fileName);
-    kami.saveKami(layers);
+    kami.saveKami(layers, backgroundColor);
     modified = false;
 }
 
