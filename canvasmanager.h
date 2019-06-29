@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "paintmanager.h"
+#include "filemanager.h"
 #include "layer.h"
 
 enum InputMode {
@@ -32,6 +33,8 @@ public:
         backgroundColor = color; 
         paint->setBackground(color);
     }
+    void saveKami(const QString &fileName);
+    void loadKami(const QString &fileName);
 
 public slots:
     void clearImage();
@@ -59,6 +62,8 @@ private:
     InputMode inputMode;
     QPointF sStart, sEnd;
     int tabletFilter = 0;
+    bool isTablet = false;
+    bool penPressed = false;
     void resizeImage(QImage *image, const QSize &newSize);
     void updateArea(QRectF rect);
     void renderStroke(const Stroke &stroke);

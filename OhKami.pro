@@ -25,16 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        canvas.cpp \
         canvasmanager.cpp \
+        filemanager.cpp \
         main.cpp \
         mainwindow.cpp \
         paintmanager.cpp
 
 HEADERS += \
-        canvas.h \
         canvasmanager.h \
         config.h \
+        filemanager.h \
         layer.h \
         mainwindow.h \
         paintmanager.h \

@@ -58,6 +58,7 @@ private:
     QBrush qbrush;
     qreal brushSize;
     void updatePainterSetting();
+    QColor backgroundColor;
     // do not use explicitly
     QColor penColorCache;
     QColor brushColorCache;

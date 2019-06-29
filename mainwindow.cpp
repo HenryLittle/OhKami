@@ -1,7 +1,6 @@
 #include <QtWidgets>
 
 #include "mainwindow.h"
-#include "canvas.h"
 #include "stroke.h"
 
 MainWindow::MainWindow() {
@@ -40,6 +39,24 @@ void MainWindow::save() {
     saveFile(fileFormat);
 }
 
+void MainWindow::openKami() {
+    QString fileName = QFileDialog::getOpenFileName(this,
+                       tr("Open Kami File"), QDir::currentPath());
+    if(!fileName.isEmpty()) {
+        canvas->loadKami(fileName);
+    }
+}
+
+void MainWindow::saveKami() {
+    QString initialPath = QDir::currentPath() + "/untitled." + "kami";
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save As Kami"),
+                                  initialPath);
+    if (!fileName.isEmpty()) {
+       canvas->saveKami(fileName);
+    }
+}
+
 void MainWindow::about() {
     QMessageBox::about(this, tr("About OhKami!"),
             tr("<p>OhKami is paint program that let you paint.</p>"));
@@ -60,6 +77,10 @@ void MainWindow::createActions() {
         saveAsActs.append(action);
     }
 
+    saveKamiAct = new QAction(tr("Save as &Kami"), this);
+    connect(saveKamiAct, &QAction::triggered, this, &MainWindow::saveKami);
+    openKamiAct = new QAction(tr("Open Kami"), this);
+    connect(openKamiAct, &QAction::triggered, this, &MainWindow::openKami);
 
     renderAct = new QAction(tr("&Render"), this);
     renderAct->setShortcut(tr("Ctrl+R"));
@@ -131,14 +152,18 @@ void MainWindow::createMenus() {
     fileMenu->addAction(openAct);
     fileMenu->addMenu(saveAsMenu);
     fileMenu->addSeparator();
+    fileMenu->addAction(openKamiAct);
+    fileMenu->addAction(saveKamiAct);
+    fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
 
     optionMenu = new QMenu(tr("&Options"), this);
     optionMenu->addAction(clearScreenAct);
-    optionMenu->addAction(renderAct);
-    //optionMenu->addAction(inputModeAct);
     optionMenu->addAction(undoAct);
+    optionMenu->addSeparator();
+    optionMenu->addAction(renderAct);
+    optionMenu->addAction(inputModeAct);
     optionMenu->addSeparator();
     optionMenu->addAction(freeAct);
     optionMenu->addAction(rectAct);

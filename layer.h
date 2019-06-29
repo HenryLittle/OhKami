@@ -11,9 +11,9 @@ enum BlendingMode{
 class Layer
 {
 public:
-    QVector<Stroke> data;
     bool visible;
     BlendingMode blendingMode;
+    QVector<Stroke> data;
 };
 
 #endif // LAYER_H

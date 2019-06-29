@@ -12,6 +12,7 @@ CanvasManager::CanvasManager(QWidget *parent)
     strokeBegin = false;
     strokeEnd = false;
     backgroundColor = QColor("white");
+    paint->setBackground(backgroundColor);
     inputMode = IM_CONTINUE;
 }
 
@@ -77,6 +78,19 @@ bool CanvasManager::saveImage(const QString &filename, const char *fileFormat) {
     }
 }
 
+void CanvasManager::loadKami(const QString &fileName) {
+    layers.clear();
+    FileManager kami(fileName);
+    layers = kami.loadKami();
+    renderCanvas();
+}
+
+void CanvasManager::saveKami(const QString &fileName) {
+    FileManager kami(fileName);
+    kami.saveKami(layers);
+    modified = false;
+}
+
 void CanvasManager::clearImage() {
     // clear the whole image
     image.fill(backgroundColor);
@@ -96,7 +110,7 @@ void CanvasManager::undo() {
 }
 
 void CanvasManager::setInputMode() {
-    std::cout<<"[Deperacated]: set input mode"<<std::endl;
+    isTablet = isTablet ? false : true;
     // inputMode = (inputMode == IM_CONTINUE) ? IM_BEGIN_END : IM_CONTINUE;
 }
 
@@ -150,9 +164,8 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
     switch (stroke.type) {
     case ST_FREE:
         for (int i = 0; i < stroke.data.length(); i++) {
-
             paint->paintEllipse(stroke.data.at(i));
-        }
+    }
         break;
     case ST_RECT:{
         QRectF rect(stroke.sStart, stroke.sEnd);
@@ -170,9 +183,9 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
         paint->paintLine(stroke.sStart, stroke.sEnd);
         break;
     case ST_ERASE:
-        paint->setBrushColor(backgroundColor);
+        paint->setBackground(backgroundColor);
         for (int i = 0; i < stroke.data.length(); i++) {
-            paint->paintEllipse(stroke.data.at(i));
+            paint->eraseEllipse(stroke.data.at(i));
         }
         break;
     }
@@ -201,10 +214,9 @@ void CanvasManager::resizeEvent(QResizeEvent *event)
 
 bool CanvasManager::event(QEvent *event) {
     // handle the events -> strokes
-    switch (event->type()) {
-    case QEvent::TouchBegin:
-    case QEvent::TouchUpdate:
-    case QEvent::TouchEnd: {
+    if (event->type() == QEvent::TouchBegin
+            || event->type() == QEvent::TouchUpdate
+            || event->type() == QEvent::TouchEnd) {
         const QTouchEvent *touch = static_cast<QTouchEvent *>(event);
         const QList<QTouchEvent::TouchPoint> touchPoints = static_cast<QTouchEvent *>(event)->touchPoints();
         if (inputMode == IM_CONTINUE) {
@@ -231,12 +243,12 @@ bool CanvasManager::event(QEvent *event) {
                 }
             }
             if (event->type() == QEvent::TouchBegin && !strokeBegin) {
-                std::cout<<"Stroke Begin: "<<std::endl;
+                std::cout<<"Touch Stroke Begin: "<<std::endl;
                 strokeBegin = true;
                 strokeEnd = false;
                 tempStroke.append(rect);
             } else if (event->type() == QEvent::TouchEnd && strokeBegin) {
-                std::cout<<"Stroke End"<<std::endl;
+                std::cout<<"Touch Stroke End"<<std::endl;
                 strokeBegin = false;
                 strokeEnd = true;
             } else if (!strokeEnd && strokeBegin) {
@@ -278,11 +290,9 @@ bool CanvasManager::event(QEvent *event) {
             }
         }
 
-        break;
-    }
-        case QEvent::TabletPress:
-        case QEvent::TabletMove:
-        case QEvent::TabletRelease: {
+    } else if (isTablet && (event->type() == QEvent::TabletPress
+               || event->type() == QEvent::TabletMove
+               || event->type() == QEvent::TabletRelease)) {
             const QTabletEvent *tablet = static_cast<QTabletEvent* >(event);
             //std::cout<<"Tablet Pen Pressure "<<tablet->pressure()<<std::endl;
             if (inputMode == IM_CONTINUE) {
@@ -306,12 +316,12 @@ bool CanvasManager::event(QEvent *event) {
                         break;
                 }
                 if (event->type() == QEvent::TabletPress && !strokeBegin) {
-                    std::cout<<"Stroke Begin"<<std::endl;
+                    std::cout<<"Tablet Stroke Begin"<<std::endl;
                     strokeBegin = true;
                     strokeEnd = false;
                     tempStroke.append(rect);
                 } else if (event->type() == QEvent::TabletRelease && strokeBegin) {
-                    std::cout<<"Stroke End"<<std::endl;
+                    std::cout<<"Tablet Stroke End"<<std::endl;
                     strokeBegin = false;
                     strokeEnd = true;
                 } else if (!strokeEnd && strokeBegin) {
@@ -361,24 +371,21 @@ bool CanvasManager::event(QEvent *event) {
                     strokeEnd = false; strokeBegin = false;
                 }
             }
-
-            break;
-        }
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonRelease:{
+        } else if (!isTablet && (event->type() == QEvent::MouseButtonPress
+                   || event->type() == QEvent::MouseMove
+                   || event->type() == QEvent::MouseButtonRelease)) {
         const QMouseEvent *mouse = static_cast<QMouseEvent* >(event);
         if (inputMode == IM_CONTINUE) {
             QRectF rect;
             rect = paint->paintMouse(mouse->pos());
             updateArea(rect);
             if (mouse->type() ==  QEvent::MouseButtonPress && mouse->button() == Qt::LeftButton && !strokeBegin) {
-                std::cout<<"Stroke Begin"<<std::endl;
+                std::cout<<"Mouse Stroke Begin"<<std::endl;
                 strokeBegin = true;
                 strokeEnd = false;
                 tempStroke.append(rect);
             } else if (mouse->type() ==  QEvent::MouseButtonRelease && mouse->button() == Qt::LeftButton && strokeBegin) {
-                std::cout<<"Stroke End"<<std::endl;
+                std::cout<<"Mouse Stroke End"<<std::endl;
                 strokeBegin = false;
                 strokeEnd = true;
             } else if (!strokeEnd && strokeBegin) {
@@ -404,7 +411,6 @@ bool CanvasManager::event(QEvent *event) {
                 sEnd = mouse->pos();
             }  else if (!strokeEnd && strokeBegin) {
                 // render temp stroke
-                tabletFilter = 0;
                 Stroke stroke = paint->initStroke();
                 stroke.sStart = sStart;
                 stroke.sEnd = mouse->pos();
@@ -421,10 +427,8 @@ bool CanvasManager::event(QEvent *event) {
                 strokeEnd = false; strokeBegin = false;
             }
         }
+    } else {
+        return QWidget::event(event);
     }
-        break;
-        default:
-            return QWidget::event(event);
-        }
     return true;
 }

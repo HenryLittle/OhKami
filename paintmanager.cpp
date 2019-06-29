@@ -40,17 +40,18 @@ void PaintManager::updatePainterSetting() {
 }
 
 void PaintManager::setBackground(QColor background) {
-    painter->setBackground(QBrush(background));
+    backgroundColor = background;
 }
 
 // for real time rendering
 QRectF PaintManager::paintTablet(const QTabletEvent &tablet) {
     qreal len = (brushSize - 5.0) * tablet.pressure();
     QRectF rect = QRectF(tablet.posF().x() - len / 2, tablet.posF().y() - len / 2, len, len);
-    painter->begin(image);
-    updatePainterSetting();
-    painter->drawEllipse(rect);
-    painter->end();
+    if (strokeType == ST_ERASE) {
+        eraseEllipse(rect);
+    } else {
+        paintEllipse(rect);
+    }
     return rect;
 }
 
@@ -69,16 +70,20 @@ QRectF PaintManager::eraseTablet(const QTabletEvent &tablet, QColor backgroundCo
 
 QRectF PaintManager::paintMouse(const QPointF &pos) {
     QRectF rect = QRectF(pos.x() - brushSize / 2, pos.y() - brushSize / 2, brushSize, brushSize);
-    paintEllipse(rect);
+    if (strokeType == ST_ERASE) {
+        eraseEllipse(rect);
+    } else {
+        paintEllipse(rect);
+    }
     return rect;
 }
 
 void PaintManager::paintTouch(QRectF rect) {
-    painter->begin(image);
-    painter->setPen(Qt::NoPen);
-    updatePainterSetting();
-    painter->drawEllipse(rect);
-    painter->end();
+    if (strokeType == ST_ERASE) {
+        eraseEllipse(rect);
+    } else {
+        paintEllipse(rect);
+    }
 }
 
 // for render the whole canvas
@@ -91,7 +96,7 @@ void PaintManager::paintEllipse(const QRectF &rect) {
 
 void PaintManager::eraseEllipse(const QRectF &rect) {
     QBrush tempBrush = qbrush;
-    qbrush = painter->background();
+    qbrush.setColor(backgroundColor);
     paintEllipse(rect);
     qbrush = tempBrush;
 }
@@ -105,7 +110,7 @@ void PaintManager::paintRect(QRectF rect) {
 
 void PaintManager::eraseRect(QRectF rect) {
     QBrush tempBrush = qbrush;
-    qbrush = painter->background();
+    qbrush.setColor(backgroundColor);
     paintRect(rect);
     qbrush = tempBrush;
 }
@@ -122,7 +127,7 @@ void PaintManager::paintLine(QPointF pos1, QPointF pos2) {
 
 void PaintManager::eraseLine(QPointF pos1, QPointF pos2) {
     QBrush tempBrush = qbrush;
-    qbrush = painter->background();
+    qbrush.setColor(backgroundColor);
     paintLine(pos1, pos2);
     qbrush = tempBrush;
 }

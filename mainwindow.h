@@ -19,6 +19,8 @@ protected:
 private slots:
     void open();
     void save();
+    void openKami();
+    void saveKami();
     void about();
 
 private:
@@ -37,6 +39,8 @@ private:
 
     QAction *openAct;
     QList<QAction *> saveAsActs;
+    QAction *openKamiAct;
+    QAction *saveKamiAct;
     QAction *exitAct;
     QAction *renderAct;
     QAction *clearScreenAct;
