@@ -38,7 +38,9 @@ public:
     QColor getBrushColor() {return qbrush.color();}
     void setPenColor(QColor color) {qpen.setColor(color);}
     void setBrushColor(QColor color) {qbrush.setColor(color);}
-
+    void setPenWidth(int width){qpen.setWidth((width));}
+    void setBrushWidth(int width){brushSize = (qreal)width;}
+    void setBrush(const QBrush &brush);
 
     QRectF paintTablet(const QTabletEvent &tablet);
     QRectF eraseTablet(const QTabletEvent &tablet, QColor backgroundColor);

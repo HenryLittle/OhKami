@@ -6,6 +6,18 @@
 #include <QColorDialog>
 #include "canvasmanager.h"
 
+QT_BEGIN_NAMESPACE
+class QAction;
+class QToolBox;
+class QSpinBox;
+class QComboBox;
+class QButtonGroup;
+class QAbstractButton;
+class QTableWidget;
+class QLabel;
+
+QT_END_NAMESPACE
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -20,12 +32,21 @@ private slots:
     void open();
     void save();
     void about();
+    void changepenwidth(const int width);
+    void changebrushwidth(const int width);
+    void changepenstyle();
+    void layerbuttonclicked(int id);
+    void visiblelayer(int x,int y);
+    void changelayer(int x,int y);
 
 private:
     void createActions();
     void createMenus();
+    void createToolbar();
+    void createToolbox();
     bool maybeSave();
     bool saveFile(const QByteArray &fileFormat);
+    void insertintolist();
 
     CanvasManager *canvas;
 
@@ -34,6 +55,18 @@ private:
     QMenu *optionMenu;
     QMenu *helpMenu;
     QMenu *toolMenu;
+
+    QToolBar *pentoolbar;
+    QSpinBox *penwidspinbox;
+    QSpinBox *brushwidspinbox;
+    QComboBox *penstyle;
+    QLabel *penstylelabel;
+
+    QToolBox *layertoolbox;
+    QButtonGroup *layerbuttongroup;
+    QTableWidget *layertable;
+    QLabel *current;
+    int layernum;
 
     QAction *openAct;
     QList<QAction *> saveAsActs;
