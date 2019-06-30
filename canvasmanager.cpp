@@ -44,8 +44,9 @@ void CanvasManager::setwidth(ToolType tool,int width){
         paint->setBrushWidth(width);
     }
         break;
+    default:
+        break;
     }
-
 }
 
 void CanvasManager::setbrushstyle(const QBrush &brush){
@@ -169,7 +170,7 @@ void CanvasManager::renderCanvas() {
         image.fill(backgroundColor);
         for (int i = 0; i < layers.length(); i++) {
             const Layer &la = layers.at(i);
-            if (!la.data.empty()&&la.visible) {
+            if (!la.data.empty() && la.visible) {
                 for (int j = 0; j < la.data.length(); j++) {
                     const Stroke &st = la.data.at(j);
                     renderStroke(st);
