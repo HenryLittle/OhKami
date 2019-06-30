@@ -314,6 +314,7 @@ bool CanvasManager::event(QEvent *event) {
                 layers[currentLayer].data.append(stroke);
                 tempStroke.clear();
                 strokeEnd = false; strokeBegin = false;
+                renderCanvas();
             }
         }
 
@@ -396,6 +397,7 @@ bool CanvasManager::event(QEvent *event) {
                     layers[currentLayer].data.append(stroke);
                     tempStroke.clear();
                     strokeEnd = false; strokeBegin = false;
+                    renderCanvas();
                 }
             }
         } else if (!isTablet && (event->type() == QEvent::MouseButtonPress
@@ -424,6 +426,7 @@ bool CanvasManager::event(QEvent *event) {
                 layers[currentLayer].data.append(stroke);
                 tempStroke.clear();
                 strokeEnd = false; strokeBegin = false;
+                renderCanvas();
             }
         } else if (inputMode == IM_BEGIN_END) {
             if (mouse->type() ==  QEvent::MouseButtonPress && mouse->button() == Qt::LeftButton && !strokeBegin) {
