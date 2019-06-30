@@ -6,11 +6,11 @@ PaintManager::PaintManager(QImage *image, StrokeMode paintMode) {
     this->painter = new QPainter();
     this->strokeMode = paintMode;
     this->image = image;
-    // for test only
+    // defaults
     setStrokeMode(STM_FILL);
     this->strokeType = ST_FREE;
     this->qbrush = QBrush(QColor("grey"));
-    this->brushSize = 150.0;
+    this->brushSize = 50.0;
 }
 
 void PaintManager::setStrokeMode(StrokeMode strokeMode) {
@@ -138,6 +138,8 @@ Stroke PaintManager::initStroke() {
     stroke.outlineColor = qpen.color();
     stroke.mode = strokeMode;
     stroke.type = strokeType;
+    stroke.pen = qpen;
+    stroke.brush = qbrush;
     std::cout<<"Initing stroke type: "<<strokeType<<std::endl;
     return stroke;
 }

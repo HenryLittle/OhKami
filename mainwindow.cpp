@@ -385,17 +385,14 @@ void MainWindow::changebrushwidth(const int width){
 
 void MainWindow::changepenstyle(){
     Qt::BrushStyle style = Qt::BrushStyle(penstyle->itemData(
-//! [13]
             penstyle->currentIndex(), IdRole).toInt());
 
-//! [14]
     if (style == Qt::LinearGradientPattern) {
         QLinearGradient linearGradient(0, 0, 100, 100);
         linearGradient.setColorAt(0.0, Qt::white);
         linearGradient.setColorAt(0.2, Qt::green);
         linearGradient.setColorAt(1.0, Qt::black);
         canvas->setbrushstyle(linearGradient);
-//! [14] //! [15]
     } else if (style == Qt::RadialGradientPattern) {
         QRadialGradient radialGradient(50, 50, 50, 70, 70);
         radialGradient.setColorAt(0.0, Qt::white);
@@ -408,10 +405,8 @@ void MainWindow::changepenstyle(){
         conicalGradient.setColorAt(0.2, Qt::green);
         conicalGradient.setColorAt(1.0, Qt::black);
         canvas->setbrushstyle(conicalGradient);
-//! [15] //! [16]
     } else if (style == Qt::TexturePattern) {
         canvas->setbrushstyle(QBrush(QPixmap(":/images/brick.png")));
-//! [16] //! [17]
     } else {
         canvas->setbrushstyle(QBrush(Qt::green, style));
     }

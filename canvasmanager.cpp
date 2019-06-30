@@ -50,7 +50,9 @@ void CanvasManager::setwidth(ToolType tool,int width){
 }
 
 void CanvasManager::setbrushstyle(const QBrush &brush){
-    paint->setBrush(brush);
+    QBrush temp = brush;
+    temp.setColor(paint->qbrush.color());
+    paint->setBrush(temp);
 }
 
 
@@ -130,7 +132,7 @@ void CanvasManager::clearImage() {
 
 void CanvasManager::undo() {
     if (!layers.at(currentLayer).data.empty()) {
-        std::cout<<"undo..."<<std::endl;
+        std::cout<<"undo... at layer: "<< currentLayer <<std::endl;
         layers[currentLayer].data.removeLast();
         renderCanvas();
     }
@@ -184,10 +186,8 @@ void CanvasManager::renderCanvas() {
 
 void CanvasManager::renderStroke(const Stroke &stroke) {
     paint->cacheState();
-    paint->setPenColor(stroke.outlineColor);
-    paint->setBrushColor(stroke.fillColor);
-    paint->strokeMode = stroke.mode;
-    paint->strokeType = stroke.type;
+    paint->qpen = stroke.pen;
+    paint->qbrush = stroke.brush;
     switch (stroke.type) {
     case ST_FREE:
         for (int i = 0; i < stroke.data.length(); i++) {
@@ -473,19 +473,18 @@ void CanvasManager::deletelayer(int index){
     printf("delete one\n");
     temp=&layers[index];
     layers.remove(index);
-
-
+    renderCanvas();
 }
 
 void CanvasManager::setcurrentlayer(int index){
     currentLayer=index;
-    printf("%d",index);
+    printf("current layer: %d\n",index);
 }
 
 void CanvasManager::setvisible(int index,bool flag){
 
     layers[index].visible=flag;
-
+    renderCanvas();
 }
 int CanvasManager::getlayerscount(){
     return layers.count();
