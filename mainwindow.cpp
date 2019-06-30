@@ -8,15 +8,15 @@ const int IdRole = Qt::UserRole;
 MainWindow::MainWindow() {
     canvas = new CanvasManager();
 
-
-
+    canvas->saveasflag=true;
+    layernum = 1;
     createActions();
     createMenus();
     createToolbar();
 
 
     createToolbox();
-    layernum = 0;
+
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(canvas);
@@ -158,6 +158,8 @@ void MainWindow::createActions() {
 
     aboutQtAct = new QAction(tr("About &Qt"), this);
     connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
+
+
 }
 
 void MainWindow::createToolbar(){
@@ -169,8 +171,12 @@ void MainWindow::createToolbar(){
     QLabel *blank3 = new QLabel(tr("  "));
     QLabel *blank4 = new QLabel(tr("  "));
     QLabel *blank5 = new QLabel(tr("  "));
+    QLabel *blank6 = new QLabel(tr("  "));
+    QLabel *blank7 = new QLabel(tr("  "));
     QLabel *penlabel = new QLabel(tr("penwidth :"));
     QLabel *brushlabel = new QLabel(tr("brushwidth :"));
+    QLabel *graphwidthlabel = new QLabel(tr("graphlength :"));
+    QLabel *graphlengthlabel = new QLabel(tr("graphwidth :"));
 
     penwidspinbox = new QSpinBox;
     penwidspinbox->setRange(0,30);
@@ -181,6 +187,18 @@ void MainWindow::createToolbar(){
     brushwidspinbox->setRange(0,150);
     brushwidspinbox->setValue(50);
     connect(brushwidspinbox,SIGNAL(valueChanged(int)),this,SLOT(changebrushwidth(int)));
+
+    graphwidthspinbox = new QSpinBox;
+    graphwidthspinbox->setRange(0,3000);
+    graphwidthspinbox->setValue(800);
+    canvas->imagewidth= 800;
+    connect(graphwidthspinbox,SIGNAL(valueChanged(int)),this,SLOT(changegraphwidth(int)));
+
+    graphlengthspinbox = new QSpinBox;
+    graphlengthspinbox->setRange(0,2000);
+    graphlengthspinbox->setValue(600);
+    canvas->imagelength = 600;
+    connect(graphlengthspinbox,SIGNAL(valueChanged(int)),this,SLOT(changegraphlength(int)));
 
     penstyle = new QComboBox;
     penstyle->addItem(tr("Solid"), static_cast<int>(Qt::SolidPattern));
@@ -221,6 +239,13 @@ void MainWindow::createToolbar(){
     pentoolbar->addWidget(penstyle);
     pentoolbar->addWidget(blank5);
     pentoolbar->addAction(eraseAct);
+    pentoolbar->addWidget(blank6);
+    pentoolbar->addWidget(graphwidthlabel);
+    pentoolbar->addWidget(graphwidthspinbox);
+    pentoolbar->addWidget(blank7);
+    pentoolbar->addWidget(graphlengthlabel);
+    pentoolbar->addWidget(graphlengthspinbox);
+
 }
 
 void MainWindow::createToolbox(){
@@ -238,11 +263,12 @@ void MainWindow::createToolbox(){
     QStringList headers;
     headers<<"num"<<"vis";
     layertable->setHorizontalHeaderLabels(headers);
-    QString num = QString::number(0);
-    layertable->setItem(0,0,new QTableWidgetItem(QString(num)));
+    QString s = QString("layer")+QString::number(1);
+    layertable->setItem(0,0,new QTableWidgetItem(QString(s)));
     QTableWidgetItem *checkBox = new QTableWidgetItem();
     checkBox->setCheckState(Qt::Checked);
     layertable->setItem(0,1,checkBox);
+    canvas->setvisible(0,true);
     layout->addWidget(layertable,0);
     connect(layertable,SIGNAL(cellChanged(int,int)),this,SLOT(visiblelayer(int,int)));
     connect(layertable,SIGNAL(cellClicked(int,int)),this,SLOT(changelayer(int,int)));
@@ -424,12 +450,15 @@ void MainWindow::layerbuttonclicked(int id){
 
         index=canvas->createnewlayer();
         insertintolist();
+        QString s = QString("current:layer")+QString::number(layertable->rowCount());
+        current->setText(s);
     }
     else if (id ==1) {
 
         index=layertable->currentRow();
         canvas->deletelayer(index);
         layertable->removeRow(index);
+        canvas->setcurrentlayer(0);
         QString s = QString("current:")+QString::number(1);
         current->setText(s);
     }
@@ -441,7 +470,8 @@ void MainWindow::insertintolist(){
     row=layertable->rowCount();
     layertable->insertRow(row);
     QString num = QString::number(layernum);
-    layertable->setItem(row,0,new QTableWidgetItem(QString(num)));
+    QString s = "layer"+num;
+    layertable->setItem(row,0,new QTableWidgetItem(s));
     QTableWidgetItem *checkBox = new QTableWidgetItem();
     checkBox->setCheckState(Qt::Checked);
     layertable->setItem(row,1,checkBox);
@@ -457,8 +487,10 @@ void MainWindow::visiblelayer(int x,int y){
 }
 
 void MainWindow::changelayer(int x,int y){
-    if(y==0)
+    if(y==0){
+
         canvas->setcurrentlayer(x);
+    }
     QString s = QString("current:")+QString::number(x+1);
     current->setText(s);
 }
@@ -472,4 +504,15 @@ void MainWindow::layertableinit(){
 
 }
 
+void MainWindow::changegraphwidth(const int width){
+    canvas->imagewidth =width;
+}
 
+void MainWindow::changegraphlength(const int length){
+    canvas->imagelength= length;
+}
+
+void MainWindow::saveassize(){
+    canvas->saveasflag=true;
+    printf("set flag\n");
+}

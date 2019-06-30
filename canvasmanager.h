@@ -40,6 +40,10 @@ public:
     void setcurrentlayer(int index);
     void setvisible(int index,bool flag);
     int getlayerscount();
+    void saveresize(int x,int y);
+    bool saveasflag;
+    int imagewidth;
+    int imagelength;
 
 public slots:
     void clearImage();
@@ -74,6 +78,7 @@ private:
     void resizeImage(QImage *image, const QSize &newSize);
     void updateArea(QRectF rect);
     void renderStroke(const Stroke &stroke);
+
 };
 
 #endif // CANVASMANAGER_H
