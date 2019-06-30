@@ -41,6 +41,9 @@ private slots:
     void visiblelayer(int x,int y);
     void changelayer(int x,int y);
     void layertableinit();
+    void saveassize();
+    void changegraphwidth(const int width);
+    void changegraphlength(const int length);
 
 private:
     void createActions();
@@ -64,6 +67,10 @@ private:
     QSpinBox *brushwidspinbox;
     QComboBox *penstyle;
     QLabel *penstylelabel;
+    QSpinBox *graphwidthspinbox;
+    QSpinBox *graphlengthspinbox;
+    int graphwidth;
+    int graphlength;
 
     QToolBox *layertoolbox;
     QButtonGroup *layerbuttongroup;
@@ -82,6 +89,7 @@ private:
     QAction *aboutQtAct;
     QAction *inputModeAct;
     QAction *undoAct;
+    QAction *saveasAct;
     // settings
     QAction *penColorAct;
     QAction *brushColorAct;

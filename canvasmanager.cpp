@@ -95,8 +95,8 @@ void CanvasManager::changeStrokeMode() {
 
 bool CanvasManager::saveImage(const QString &filename, const char *fileFormat) {
     QImage visibleImage = image;
-    resizeImage(&visibleImage, size());
-
+    //resizeImage(&visibleImage,QSize(imagewidth,imagelength));
+    visibleImage=image.scaled(imagewidth,imagelength,Qt::KeepAspectRatioByExpanding);
     if (visibleImage.save(filename, fileFormat)) {
         modified = false;
         return true;
@@ -492,3 +492,6 @@ void CanvasManager::setvisible(int index,bool flag){
 int CanvasManager::getlayerscount(){
     return layers.count();
 }
+
+
+
