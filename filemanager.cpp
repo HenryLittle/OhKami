@@ -24,8 +24,6 @@ void FileManager::saveKami(const QVector<Layer> &layers, QColor background) {
             out << static_cast<qint16>(stroke.mode);
             out << stroke.sStart;
             out << stroke.sEnd;
-            out << stroke.pen;
-            out << stroke.brush;
             out << stroke.data.length();
             for (int k = 0; k < stroke.data.length(); k++) {
                 out << stroke.data.at(k);
@@ -66,8 +64,6 @@ QVector<Layer> FileManager::loadKami() {
                 in >> m; stroke.mode = StrokeMode(m);
                 in >> stroke.sStart;
                 in >> stroke.sEnd;
-                in >> stroke.pen;
-                in >> stroke.brush;
                 in >> l3;
                 for (int k = 0; k < l3; k ++) {
                     QRectF rect;
