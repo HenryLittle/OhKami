@@ -50,8 +50,9 @@ void CanvasManager::setwidth(ToolType tool,int width){
 }
 
 void CanvasManager::setbrushstyle(const QBrush &brush){
-    // paint->setBrush(brush);
-    paint->setBrushStyle(brush.style());
+    QBrush temp = brush;
+    temp.setColor(paint->qbrush.color());
+    paint->setBrush(temp);
 }
 
 
@@ -185,11 +186,8 @@ void CanvasManager::renderCanvas() {
 
 void CanvasManager::renderStroke(const Stroke &stroke) {
     paint->cacheState();
-    paint->setPenColor(stroke.outlineColor);
-    paint->setBrushColor(stroke.fillColor);
-    paint->strokeMode = stroke.mode;
-    paint->strokeType = stroke.type;
-    paint->brushStyle = stroke.brushStyle;
+    paint->qpen = stroke.pen;
+    paint->qbrush = stroke.brush;
     switch (stroke.type) {
     case ST_FREE:
         for (int i = 0; i < stroke.data.length(); i++) {
@@ -475,8 +473,7 @@ void CanvasManager::deletelayer(int index){
     printf("delete one\n");
     temp=&layers[index];
     layers.remove(index);
-
-
+    renderCanvas()
 }
 
 void CanvasManager::setcurrentlayer(int index){

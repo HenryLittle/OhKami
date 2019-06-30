@@ -19,26 +19,19 @@ public:
     void setStrokeMode(StrokeMode strokeMode);
     Stroke initStroke();
     void setBackground(QColor background);
-    void setBrushStyle(Qt::BrushStyle style) {
-        brushStyle = style;
-    }
     void cacheState() {
-        penColorCache = qpen.color();
-        brushColorCache = qbrush.color();
-        smCache = strokeMode;
-        stCache = strokeType;
-        btCache = brushStyle;
+        penCache = qpen;
+        brushCache = qbrush;
     }
     void restoreState() {
-        qpen.setColor(penColorCache);
-        qbrush.setColor(brushColorCache);
-        strokeMode = smCache;
-        strokeType = stCache;
-        brushStyle = btCache;
+        qpen = penCache;
+        qbrush = brushCache;
     }
 
 
     // paint APIs
+    QPen qpen;
+    QBrush qbrush;
 
     QColor getPenColor() {return qpen.color();}
     QColor getBrushColor() {return qbrush.color();}
@@ -62,17 +55,12 @@ public:
 private:
     QImage *image;
     QPainter *painter;
-    QPen qpen;
-    QBrush qbrush;
     qreal brushSize;
     void updatePainterSetting();
     QColor backgroundColor;
     // do not use explicitly
-    QColor penColorCache;
-    QColor brushColorCache;
-    StrokeMode smCache;
-    StrokeType stCache;
-    Qt::BrushStyle btCache;
+    QPen penCache;
+    QBrush brushCache;
 };
 
 #endif // PAINTMANAGER_H
