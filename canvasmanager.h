@@ -39,6 +39,7 @@ public:
     void deletelayer(int index);
     void setcurrentlayer(int index);
     void setvisible(int index,bool flag);
+    int getlayerscount();
 
 public slots:
     void clearImage();

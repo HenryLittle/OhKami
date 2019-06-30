@@ -487,3 +487,6 @@ void CanvasManager::setvisible(int index,bool flag){
     layers[index].visible=flag;
 
 }
+int CanvasManager::getlayerscount(){
+    return layers.count();
+}

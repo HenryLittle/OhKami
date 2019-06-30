@@ -59,6 +59,7 @@ void MainWindow::openKami() {
                        tr("Open Kami File"), QDir::currentPath());
     if(!fileName.isEmpty()) {
         canvas->loadKami(fileName);
+        layertableinit();
     }
 }
 
@@ -182,6 +183,7 @@ void MainWindow::createToolbar(){
     connect(brushwidspinbox,SIGNAL(valueChanged(int)),this,SLOT(changebrushwidth(int)));
 
     penstyle = new QComboBox;
+    penstyle->addItem(tr("Solid"), static_cast<int>(Qt::SolidPattern));
     penstyle->addItem(tr("Linear Gradient"),
             static_cast<int>(Qt::LinearGradientPattern));
     penstyle->addItem(tr("Radial Gradient"),
@@ -189,7 +191,6 @@ void MainWindow::createToolbar(){
     penstyle->addItem(tr("Conical Gradient"),
             static_cast<int>(Qt::ConicalGradientPattern));
     penstyle->addItem(tr("Texture"), static_cast<int>(Qt::TexturePattern));
-    penstyle->addItem(tr("Solid"), static_cast<int>(Qt::SolidPattern));
     penstyle->addItem(tr("Horizontal"), static_cast<int>(Qt::HorPattern));
     penstyle->addItem(tr("Vertical"), static_cast<int>(Qt::VerPattern));
     penstyle->addItem(tr("Cross"), static_cast<int>(Qt::CrossPattern));
@@ -281,7 +282,7 @@ void MainWindow::createToolbox(){
     icons->setLayout(iconslayout);
     layout->addWidget(icons,1);
 
-    current= new QLabel(tr("current:0"));
+    current= new QLabel(tr("current:1"));
     layout->addWidget(current,2);
 
     layout->setStretch(0,10);
@@ -424,7 +425,7 @@ void MainWindow::layerbuttonclicked(int id){
             button->setChecked(false);
     }
     if (id == 0) {
-        layernum++;
+
 
         index=canvas->createnewlayer();
         insertintolist();
@@ -441,6 +442,7 @@ void MainWindow::layerbuttonclicked(int id){
 
 void MainWindow::insertintolist(){
     int row;
+    layernum++;
     row=layertable->rowCount();
     layertable->insertRow(row);
     QString num = QString::number(layernum);
@@ -464,4 +466,13 @@ void MainWindow::changelayer(int x,int y){
         canvas->setcurrentlayer(x);
     QString s = QString("current:")+QString::number(x+1);
     current->setText(s);
+}
+
+void MainWindow::layertableinit(){
+    int i,num=canvas->getlayerscount();
+    layernum=0;
+    for(i=1;i<num;i++){
+        insertintolist();
+    }
+
 }

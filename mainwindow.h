@@ -40,6 +40,7 @@ private slots:
     void layerbuttonclicked(int id);
     void visiblelayer(int x,int y);
     void changelayer(int x,int y);
+    void layertableinit();
 
 private:
     void createActions();
