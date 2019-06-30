@@ -34,8 +34,8 @@ public:
     StrokeMode mode;
     QPointF sStart;
     QPointF sEnd;
-    QPen pen;
     QBrush brush;
+    QPen pen;
 };
 
 #endif // STROKE_H

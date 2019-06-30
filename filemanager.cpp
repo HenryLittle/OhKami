@@ -66,6 +66,8 @@ QVector<Layer> FileManager::loadKami() {
                 in >> m; stroke.mode = StrokeMode(m);
                 in >> stroke.sStart;
                 in >> stroke.sEnd;
+                in >> stroke.pen;
+                in >> stroke.brush;
                 in >> l3;
                 for (int k = 0; k < l3; k ++) {
                     QRectF rect;
