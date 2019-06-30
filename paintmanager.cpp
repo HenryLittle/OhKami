@@ -138,6 +138,7 @@ Stroke PaintManager::initStroke() {
     stroke.outlineColor = qpen.color();
     stroke.mode = strokeMode;
     stroke.type = strokeType;
+    stroke.brushStyle = brushStyle;
     std::cout<<"Initing stroke type: "<<strokeType<<std::endl;
     return stroke;
 }

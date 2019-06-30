@@ -14,21 +14,27 @@ class PaintManager
 public:
     StrokeType strokeType;
     StrokeMode strokeMode;
+    Qt::BrushStyle brushStyle;
     PaintManager(QImage *image, StrokeMode strokeMode = STM_FILL);
     void setStrokeMode(StrokeMode strokeMode);
     Stroke initStroke();
     void setBackground(QColor background);
+    void setBrushStyle(Qt::BrushStyle style) {
+        brushStyle = style;
+    }
     void cacheState() {
         penColorCache = qpen.color();
         brushColorCache = qbrush.color();
         smCache = strokeMode;
         stCache = strokeType;
+        btCache = brushStyle;
     }
     void restoreState() {
         qpen.setColor(penColorCache);
         qbrush.setColor(brushColorCache);
         strokeMode = smCache;
         strokeType = stCache;
+        brushStyle = btCache;
     }
 
 
@@ -39,7 +45,7 @@ public:
     void setPenColor(QColor color) {qpen.setColor(color);}
     void setBrushColor(QColor color) {qbrush.setColor(color);}
     void setPenWidth(int width){qpen.setWidth((width));}
-    void setBrushWidth(int width){brushSize = (qreal)width;}
+    void setBrushWidth(int width){brushSize = static_cast<qreal>(width);}
     void setBrush(const QBrush &brush);
 
     QRectF paintTablet(const QTabletEvent &tablet);
@@ -66,6 +72,7 @@ private:
     QColor brushColorCache;
     StrokeMode smCache;
     StrokeType stCache;
+    Qt::BrushStyle btCache;
 };
 
 #endif // PAINTMANAGER_H
