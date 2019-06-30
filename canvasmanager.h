@@ -35,6 +35,10 @@ public:
     }
     void saveKami(const QString &fileName);
     void loadKami(const QString &fileName);
+    int createnewlayer();
+    void deletelayer(int index);
+    void setcurrentlayer(int index);
+    void setvisible(int index,bool flag);
 
 public slots:
     void clearImage();
@@ -44,6 +48,8 @@ public slots:
     void setType(StrokeType st);
     void setColor(ToolType tool);
     void changeStrokeMode();
+    void setwidth(ToolType tool,int width);
+    void setbrushstyle(const QBrush &brush);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

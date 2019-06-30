@@ -141,3 +141,12 @@ Stroke PaintManager::initStroke() {
     std::cout<<"Initing stroke type: "<<strokeType<<std::endl;
     return stroke;
 }
+
+void PaintManager::setBrush(const QBrush &brush)
+{
+    this->qbrush = brush;
+
+}
+
+
+

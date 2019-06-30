@@ -31,6 +31,28 @@ bool CanvasManager::openImage(const QString &filename) {
     return true;
 }
 
+
+void CanvasManager::setwidth(ToolType tool,int width){
+    switch (tool) {
+    case TT_PEN:{
+
+        paint->setPenWidth(width);
+    }
+        break;
+    case TT_BRUSH:{
+
+        paint->setBrushWidth(width);
+    }
+        break;
+    }
+
+}
+
+void CanvasManager::setbrushstyle(const QBrush &brush){
+    paint->setBrush(brush);
+}
+
+
 void CanvasManager::setColor(ToolType tool) {
     switch (tool) {
     case TT_PEN:{
@@ -52,6 +74,7 @@ void CanvasManager::setColor(ToolType tool) {
         break;
     }
 }
+
 
 void CanvasManager::setType(StrokeType st) {
     this->paint->strokeType = st;
@@ -146,7 +169,7 @@ void CanvasManager::renderCanvas() {
         image.fill(backgroundColor);
         for (int i = 0; i < layers.length(); i++) {
             const Layer &la = layers.at(i);
-            if (!la.data.empty()) {
+            if (!la.data.empty()&&la.visible) {
                 for (int j = 0; j < la.data.length(); j++) {
                     const Stroke &st = la.data.at(j);
                     renderStroke(st);
@@ -434,4 +457,32 @@ bool CanvasManager::event(QEvent *event) {
         return QWidget::event(event);
     }
     return true;
+}
+
+int CanvasManager::createnewlayer(){
+    Layer *newitem = new Layer;
+    layers.append(*newitem);
+    currentLayer = layers.count()-1;
+    return currentLayer;
+}
+
+void CanvasManager::deletelayer(int index){
+    Layer *temp;
+    setcurrentlayer(0);
+    printf("delete one\n");
+    temp=&layers[index];
+    layers.remove(index);
+
+
+}
+
+void CanvasManager::setcurrentlayer(int index){
+    currentLayer=index;
+    printf("%d",index);
+}
+
+void CanvasManager::setvisible(int index,bool flag){
+
+    layers[index].visible=flag;
+
 }
