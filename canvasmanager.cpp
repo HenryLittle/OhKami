@@ -473,7 +473,7 @@ void CanvasManager::deletelayer(int index){
     printf("delete one\n");
     temp=&layers[index];
     layers.remove(index);
-    renderCanvas()
+    renderCanvas();
 }
 
 void CanvasManager::setcurrentlayer(int index){
