@@ -485,5 +485,5 @@ void CanvasManager::setcurrentlayer(int index){
 void CanvasManager::setvisible(int index,bool flag){
 
     layers[index].visible=flag;
-
+    renderCanvas();
 }
