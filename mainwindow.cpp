@@ -432,7 +432,7 @@ void MainWindow::changepenstyle(){
         conicalGradient.setColorAt(1.0, Qt::black);
         canvas->setbrushstyle(conicalGradient);
     } else if (style == Qt::TexturePattern) {
-        canvas->setbrushstyle(QBrush(QPixmap(":/images/brick.png")));
+        canvas->setbrushstyle(QBrush(QPixmap(":/images/color")));
     } else {
         canvas->setbrushstyle(QBrush(Qt::green, style));
     }

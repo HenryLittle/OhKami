@@ -188,6 +188,7 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
     paint->cacheState();
     paint->qpen = stroke.pen;
     paint->qbrush = stroke.brush;
+    paint->setStrokeMode(stroke.mode);
     switch (stroke.type) {
     case ST_FREE:
         for (int i = 0; i < stroke.data.length(); i++) {
@@ -205,6 +206,7 @@ void CanvasManager::renderStroke(const Stroke &stroke) {
     }
         break;
     case ST_DIAMOND:
+        renderEnable = renderEnable ? false : true;
         break;
     case ST_LINE:
         paint->paintLine(stroke.sStart, stroke.sEnd);
